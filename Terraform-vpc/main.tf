@@ -17,13 +17,13 @@ module "instance" {
   instance-names = var.instance-names
 }
 
-module "alb" {
-  source = "./modules/alb"
-  sg-alb = module.sg.sg-id
-  subnets-alb = module.vpc.subnet_id
-  vpc-id = module.vpc.vpc_id
-  Instance-id = module.instance.instances
-}
+# module "alb" {
+#   source = "./modules/alb"
+#   sg-alb = module.sg.sg-id
+#   subnets-alb = module.vpc.subnet_id
+#   vpc-id = module.vpc.vpc_id
+#   Instance-id = module.instance.instances
+# }
 
 
 # output "instance_ips" {
