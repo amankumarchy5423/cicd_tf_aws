@@ -2,8 +2,8 @@ name: app deploy to EKS
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
 
 
 
