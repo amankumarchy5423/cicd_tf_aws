@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: primuslearning
-          image: {{values.appimage}}:{{values.apptag}}
+          image: "{{ .Values.appimage }}:{{ .Values.apptag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
