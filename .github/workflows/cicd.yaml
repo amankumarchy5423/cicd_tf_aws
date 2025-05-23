@@ -11,7 +11,7 @@ jobs:
 
     env:
       AWS_REGION: ${{vars.AWS_REGION}}
-      ECR_REPO: ${{secrets.ECR_REPO}}
+      ECR_REGISTRY: ${{secrets.ECR_REGISTRY_URL}}
       
 
     steps:
@@ -24,8 +24,8 @@ jobs:
         access_key: ${{ secrets.AWS_ACCESS_KEY }}
         secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         region: ${{ env.AWS_REGION }}
-        registry: ${{env.ECR_REPO}}
-        repo: ${{vars.ECR_REGISTRY }}
+        registry: ${{env.ECR_REGISTRY}}
+        repo: ${{vars.ECR_REPO }}
         tags: latest,${{github.run_number}}
         daemon_off: false
         dockerfile: ./DockerFile
@@ -46,13 +46,13 @@ jobs:
             aws-region: ap-south-1
       - name: get to EKS
         id: getconfig
-        run: aws eks update-kubeconfig --name ${{ env.ECR_REPO }} --region ${{ env.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ env.ECR_REGISTRY }} --region ${{ env.AWS_REGION }}
 
       - name: Login to ECR
         run: |
             kubectl get secret regcred || \
             kubectl create secret docker-registry regcred \
-              --docker-server=${{ env.ECR_REPO }} \
+              --docker-server=${{ env.ECR_REGISTRY }} \
               --docker-username=AWS \
               --docker-password=$(aws ecr get-login-password)
 
@@ -65,7 +65,7 @@ jobs:
             cluster-name: ${{ vars.EKS_CLUSTER }}
             chart-path: amanapp
             namespace: default
-            values: appimage=${{ env.ECR_REPO }}/${{ vars.ECR_REGISTRY }},apptag=${{ github.run_number }}
+            values: appimage=${{ env.ECR_REGISTRY}}/${{ vars.ECR_REPO }},apptag=${{ github.run_number }}
             name: webapp-stack
         
       - name: Show Pods
