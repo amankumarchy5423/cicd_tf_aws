@@ -26,7 +26,7 @@ jobs:
         region: ${{ env.AWS_REGION }}
         registry: ${{env.ECR_REGISTRY}}
         repo: ${{vars.ECR_REPO }}
-        tags: latest,${{github.run_number}}
+        tags: latest.${{github.run_number}}
         daemon_off: false
         dockerfile: ./DockerFile
         context: ./
@@ -59,7 +59,7 @@ jobs:
         run: |
           kubectl delete secret regcred --ignore-not-found
           kubectl create secret docker-registry regcred \
-            --docker-server=${{ env.ECR_REGISTRY }} \
+            --docker-server=920373030035.dkr.ecr.ap-south-1.amazonaws.com \
             --docker-username=AWS \
             --docker-password=$(aws ecr get-login-password --region ${{ env.AWS_REGION }})
 
