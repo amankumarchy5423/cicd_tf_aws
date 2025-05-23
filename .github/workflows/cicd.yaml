@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: E${{vars.AWS_REGION}}
+      AWS_REGION: ${{vars.AWS_REGION}}
       CLUSTER_NAME: githubactions-eks
       ECR_REPO: ${{vars.ECR_REPO}}
 
