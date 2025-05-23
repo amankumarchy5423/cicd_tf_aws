@@ -24,7 +24,9 @@ jobs:
         access_key: ${{ secrets.AWS_ACCESS_KEY }}
         secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         region: ${{ env.AWS_REGION }}
-        repo: ${{ env.ECR_REPO }}
+        registry: ${{env.ECR_REPO}}
+
+        repo: ${{vars.ECR_REGISTRY }}
         tags: latest,${{github.run_number}}
         daemon_off: false
         dockerfile: ./DockerFile
