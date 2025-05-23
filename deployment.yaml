@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: primuslearning
-          image: 274127640471.dkr.ecr.us-east-2.amazonaws.com/primuslearning:1.1
+          image: 920373030035.dkr.ecr.ap-south-1.amazonaws.com/gitops-webapp:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
