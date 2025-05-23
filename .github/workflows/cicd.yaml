@@ -18,27 +18,17 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+    - name: Build and Push Docker Image
+      uses: appleboy/docker-ecr-action@master
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+        access_key: ${{ secrets.AWS_ACCESS_KEY }}
+        secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: ${{ env.AWS_REGION }}
+        repo: ${{ env.ECR_REPO }}
+        tags: latest,${{github.run_number}}
+        daemon_off: false
+        dockerfile: ./DockerFile
+        context: ./
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Build, Tag, and Push Docker Image to ECR
-      run: |
-        docker build -t $ECR_REPO:latest .
-        docker push $ECR_REPO:latest
-
-    - name: Update Kubeconfig for EKS Cluster
-      run: |
-        aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
-
-    - name: Deploy to EKS
-      run: |
-        kubectl apply -f deployment.yml
-        kubectl apply -f service.yml
+   
