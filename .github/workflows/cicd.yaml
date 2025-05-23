@@ -13,6 +13,7 @@ jobs:
       AWS_REGION: ${{vars.AWS_REGION}}
       CLUSTER_NAME: githubactions-eks
       ECR_REPO: ${{vars.ECR_REPO}}
+      
 
     steps:
     - name: Checkout Code
@@ -25,12 +26,57 @@ jobs:
         secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         region: ${{ env.AWS_REGION }}
         registry: ${{env.ECR_REPO}}
-
         repo: ${{vars.ECR_REGISTRY }}
         tags: latest,${{github.run_number}}
         daemon_off: false
         dockerfile: ./DockerFile
         context: ./
+
+  DeploTOEKS:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: confirm aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
+
+      - name: get to EKS
+        id: getconfig
+        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        run: |
+            kubectl get secret regcred || \
+            kubectl create secret docker-registry regcred \
+              --docker-server=${{ env.ECR_REPO }} \
+              --docker-username=AWS \
+              --docker-password=$(aws ecr get-login-password)
+
+      - name: Deploy with Helm
+        uses: bitovi/github-actions-deploy-eks-helm@v1.2.12
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
+            cluster-name: ${{ env.CLUSTER_NAME }}
+            chart-path: amanapp
+            namespace: default
+            values: appimage=${{ env.ECR_REPO }}/${{ vars.ECR_REGISTRY }},apptag=${{ github.run_number }}
+            name: webapp-stack
+        
+      - name: Show Pods
+        run: kubectl get pod -A
+        
+      - name: Show SVC
+        run: kubectl get ingress
+
+        
 
 
    
