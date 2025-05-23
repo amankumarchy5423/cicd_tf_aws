@@ -11,7 +11,7 @@ jobs:
 
     env:
       AWS_REGION: ${{vars.AWS_REGION}}
-      ECR_REPO: ${{vars.ECR_REPO}}
+      ECR_REPO: ${{secrets.ECR_REPO}}
       
 
     steps:
@@ -46,7 +46,7 @@ jobs:
             aws-region: ap-south-1
       - name: get to EKS
         id: getconfig
-        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ env.ECR_REPO }} --region ${{ env.AWS_REGION }}
 
       - name: Login to ECR
         run: |
