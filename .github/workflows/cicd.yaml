@@ -11,7 +11,6 @@ jobs:
 
     env:
       AWS_REGION: ${{vars.AWS_REGION}}
-      CLUSTER_NAME: githubactions-eks
       ECR_REPO: ${{vars.ECR_REPO}}
       
 
@@ -47,7 +46,7 @@ jobs:
             aws-region: ap-south-1
       - name: get to EKS
         id: getconfig
-        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
 
       - name: Login to ECR
         run: |
@@ -63,7 +62,7 @@ jobs:
             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: ${{ env.AWS_REGION }}
-            cluster-name: ${{ env.CLUSTER_NAME }}
+            cluster-name: ${{ vars.EKS_CLUSTER }}
             chart-path: amanapp
             namespace: default
             values: appimage=${{ env.ECR_REPO }}/${{ vars.ECR_REGISTRY }},apptag=${{ github.run_number }}
